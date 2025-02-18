@@ -23,23 +23,31 @@ namespace Creators_Corner_App_API.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Unique constraints
+            modelBuilder.Entity<Customer>()
+            .HasIndex(c => c.Username)
+            .IsUnique();
+
+            modelBuilder.Entity<Customer>()
+                .HasIndex(c => c.Email)
+                .IsUnique();
+
             modelBuilder.Entity<Brand>()
                 .HasIndex(b => b.Username)
                 .IsUnique();
 
-            modelBuilder.Entity<Customer>()
-                .HasIndex(c => c.Username)
+            modelBuilder.Entity<Brand>()
+                .HasIndex(c => c.Email)
                 .IsUnique();
 
             // Relationships
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Brand)
-                .WithMany(b => b.Products)
+                .WithMany(b => b._Products)
                 .HasForeignKey(p => p.BrandId);
 
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Customer)
-                .WithMany(c => c.Orders)
+                .WithMany(c => c._Orders)
                 .HasForeignKey(o => o.CustomerId);
 
             modelBuilder.Entity<Cart>()
@@ -48,13 +56,13 @@ namespace Creators_Corner_App_API.Data
                 .HasForeignKey(c => c.CustomerId);
 
             modelBuilder.Entity<Order>()
-                .HasMany(o => o.Products)
-                .WithMany(p => p.Orders)
+                .HasMany(o => o._Products)
+                .WithMany(p => p._Orders)
                 .UsingEntity(j => j.ToTable("OrderProducts"));
 
             modelBuilder.Entity<Cart>()
-                .HasMany(c => c.Products)
-                .WithMany(p => p.Carts)
+                .HasMany(c => c._Products)
+                .WithMany(p => p._Carts)
                 .UsingEntity(j => j.ToTable("CartProducts"));
         }
     }

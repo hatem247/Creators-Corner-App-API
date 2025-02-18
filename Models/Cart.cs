@@ -2,13 +2,10 @@
 {
     public class Cart
     {
-        public int Id { get; set; } // Primary key
-
-        // Foreign key to Customer (one-to-one relationship)
+        public int Id { get; set; }
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
-
-        // Navigation property for Products (many-to-many relationship)
-        public List<Product> Products { get; set; } = new List<Product>();
+        public List<int> Products { get; set; } = new List<int>();
+        public List<Product> _Products { get; set; } = new List<Product>();
     }
 }

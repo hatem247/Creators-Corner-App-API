@@ -15,10 +15,10 @@ namespace Creators_Corner_App_API.Repositories.Customer_Repositories
             _context = context;
         }
 
-        public async Task<Customer> LoginAsync(string username, string password)
+        public async Task<Customer> LoginAsync(LoginDTO loginDTO)
         {
             var customer = await _context.Customers
-                .FirstOrDefaultAsync(c => c.Username == username && c.Password == password);
+                .FirstOrDefaultAsync(c => c.Username == loginDTO.username && c.Password == loginDTO.password);
 
             if (customer == null)
                 throw new Exception("Invalid username or password");
@@ -28,6 +28,24 @@ namespace Creators_Corner_App_API.Repositories.Customer_Repositories
 
         public async Task RegisterAsync(CustomerDTO customerDto)
         {
+            if (customerDto == null)
+            {
+                throw new ArgumentNullException(nameof(customerDto), "Customer data cannot be null.");
+            }
+
+            bool usernameExists = await _context.Customers.AnyAsync(c => c.Username == customerDto.username);
+            bool emailExists = await _context.Customers.AnyAsync(c => c.Email == customerDto.email);
+
+            if (usernameExists)
+            {
+                throw new InvalidOperationException("Username is already taken.");
+            }
+
+            if (emailExists)
+            {
+                throw new InvalidOperationException("Email is already registered.");
+            }
+            byte[] imageBytes = Convert.FromBase64String(customerDto.image);
             var customer = new Customer
             {
                 Username = customerDto.username,
@@ -35,40 +53,50 @@ namespace Creators_Corner_App_API.Repositories.Customer_Repositories
                 Email = customerDto.email,
                 Password = customerDto.password,
                 Address = customerDto.address,
-                PhoneNumber = customerDto.phoneNumber
+                PhoneNumber = customerDto.phoneNumber,
+                Image = imageBytes
             };
 
             await _context.Customers.AddAsync(customer);
             await _context.SaveChangesAsync();
         }
 
-        public async Task BuyProductAsync(int productId, string customerUsername)
+        public async Task CheckoutAsync(int customerId)
         {
             var customer = await _context.Customers
-                .FirstOrDefaultAsync(c => c.Username == customerUsername);
+                .FirstOrDefaultAsync(c => c.Id == customerId);
 
             if (customer == null)
                 throw new Exception("Customer not found");
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(p => p.Id == productId);
+            var cart = await _context.Carts
+                .FirstOrDefaultAsync(p => p.CustomerId == customerId);
 
-            if (product == null)
-                throw new Exception("Product not found");
+            if (cart == null)
+                throw new Exception("Cart not found");
 
-            if (product.StockQuantity <= 0)
-                throw new Exception("Product out of stock");
-
-            product.StockQuantity--;
+            if (cart.Products.Count == 0)
+                throw new Exception("The cart is empty");
+            decimal total = 0;
+            for (int i = 0; i < cart.Products.Count; i++)
+            {
+                var product = _context.Products.FirstOrDefault(x => x.Id == cart.Products[i]);
+                product.StockQuantity--;
+                total += product.Price;
+                product.Carts.Remove(cart.Id);
+                _context.Products.Update(product);
+                await _context.SaveChangesAsync();
+            }
 
             var order = new Order
             {
-                OrderDate = DateTime.UtcNow,
-                TotalAmount = product.Price,
+                TotalAmount = total,
                 CustomerId = customer.Id,
-                Products = new List<Product> { product }
+                Products = cart.Products,
             };
 
+            cart.Products.Clear();
+            _context.Carts.Update(cart);
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
         }
@@ -98,25 +126,24 @@ namespace Creators_Corner_App_API.Repositories.Customer_Repositories
             return comparison.ToString();
         }
 
-        public async Task ForgetPasswordAsync(string email)
+        public async Task ForgetPasswordAsync(ForgetPasswordDTO forgetPasswordDTO)
         {
             var customer = await _context.Customers
-                .FirstOrDefaultAsync(c => c.Email == email);
+                .FirstOrDefaultAsync(c => c.Email == forgetPasswordDTO.email);
 
             if (customer == null)
                 throw new Exception("Customer not found");
 
-            var temporaryPassword = Guid.NewGuid().ToString().Substring(0, 8);
-            customer.Password = temporaryPassword;
+            customer.Password = forgetPasswordDTO.newPassword;
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Cart> GetCustomerCartAsync(string customerUsername)
+        public async Task<Cart> GetCustomerCartAsync(int customerId)
         {
             var customer = await _context.Customers
                 .Include(c => c.Cart)
                 .ThenInclude(cart => cart.Products)
-                .FirstOrDefaultAsync(c => c.Username == customerUsername);
+                .FirstOrDefaultAsync(c => c.Id == customerId);
 
             if (customer == null)
                 throw new Exception("Customer not found");
@@ -124,11 +151,11 @@ namespace Creators_Corner_App_API.Repositories.Customer_Repositories
             return customer.Cart;
         }
 
-        public async Task AddProductToCartAsync(int productId, string customerUsername)
+        public async Task AddProductToCartAsync(int productId, int customerId)
         {
             var customer = await _context.Customers
                 .Include(c => c.Cart)
-                .FirstOrDefaultAsync(c => c.Username == customerUsername);
+                .FirstOrDefaultAsync(c => c.Id == customerId);
 
             if (customer == null)
                 throw new Exception("Customer not found");
@@ -145,7 +172,7 @@ namespace Creators_Corner_App_API.Repositories.Customer_Repositories
                 await _context.Carts.AddAsync(customer.Cart);
             }
 
-            customer.Cart.Products.Add(product);
+            customer.Cart.Products.Add(productId);
             await _context.SaveChangesAsync();
         }
     }

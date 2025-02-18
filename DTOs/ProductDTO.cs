@@ -11,6 +11,9 @@ namespace Creators_Corner_App_API.DTOs
         [Required(ErrorMessage = "Description is required")]
         public string description { get; set; }
 
+        [Required(ErrorMessage = "No image uploaded")]
+        public string image { get; set; }
+        
         [Required(ErrorMessage = "Price is required")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
         public decimal price { get; set; }
@@ -20,6 +23,6 @@ namespace Creators_Corner_App_API.DTOs
         public int stockQuantity { get; set; }
 
         [Required(ErrorMessage = "Brand username is required")]
-        public string brandUsername { get; set; }
+        public int brandId { get; set; }
     }
 }

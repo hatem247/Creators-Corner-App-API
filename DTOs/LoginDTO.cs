@@ -2,7 +2,7 @@
 
 namespace Creators_Corner_App_API.DTOs
 {
-    public class CustomerLoginDTO
+    public class LoginDTO
     {
         [Required(ErrorMessage = "Username is required")]
         public string username { get; set; }

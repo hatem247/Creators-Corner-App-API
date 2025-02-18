@@ -6,22 +6,25 @@ namespace Creators_Corner_App_API.DTOs
     {
         [Required(ErrorMessage = "Username is required")]
         [StringLength(50, ErrorMessage = "Username cannot exceed 50 characters")]
-        public string Username { get; set; }
+        public string username { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters")]
-        public string Name { get; set; }
+        public string name { get; set; }
+        
+        [StringLength(300, ErrorMessage = "Bio cannot exceed 300 characters")]
+        public string bio { get; set; }
+
+        [Required(ErrorMessage = "No image uploaded")]
+        public string image { get; set; }
 
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email format")]
-        public string Email { get; set; }
+        public string email { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
-        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}/\|.+-])[A-Za-z\d!@#$%^&*()_+{}/\|.+-]{8,}$",
             ErrorMessage = "Password must be at least 8 characters long and contain at least one letter, one number, and one special character.")]
-        public string Password { get; set; }
-
-        [Url(ErrorMessage = "Invalid URL format")]
-        public string InstagramAccount { get; set; }
+        public string password { get; set; }
     }
 }

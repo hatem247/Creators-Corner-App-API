@@ -10,12 +10,15 @@ namespace Creators_Corner_App_API.DTOs
         [Required(ErrorMessage = "Name is required")]
         public string name { get; set; }
 
+        [Required(ErrorMessage = "No image uploaded")]
+        public string image { get; set; }
+
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email format")]
         public string email { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
-        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}/\|.+-])[A-Za-z\d!@#$%^&*()_+{}/\|.+-]{8,}$",
             ErrorMessage = "Password must be at least 8 characters long and contain at least one letter, one number, and one special character.")]
         public string password { get; set; }
 

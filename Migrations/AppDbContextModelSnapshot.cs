@@ -24,15 +24,15 @@ namespace Creators_Corner_App_API.Migrations
 
             modelBuilder.Entity("CartProduct", b =>
                 {
-                    b.Property<int>("CartsId")
+                    b.Property<int>("_CartsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductsId")
+                    b.Property<int>("_ProductsId")
                         .HasColumnType("int");
 
-                    b.HasKey("CartsId", "ProductsId");
+                    b.HasKey("_CartsId", "_ProductsId");
 
-                    b.HasIndex("ProductsId");
+                    b.HasIndex("_ProductsId");
 
                     b.ToTable("CartProducts", (string)null);
                 });
@@ -45,13 +45,20 @@ namespace Creators_Corner_App_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Bio")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("FirstLogin")
+                        .HasColumnType("bit");
+
+                    b.Property<byte[]>("Image")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -61,11 +68,18 @@ namespace Creators_Corner_App_API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Products")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("Username")
                         .IsUnique();
@@ -96,8 +110,9 @@ namespace Creators_Corner_App_API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -117,6 +132,10 @@ namespace Creators_Corner_App_API.Migrations
 
                     b.Property<int?>("CustomerId1")
                         .HasColumnType("int");
+
+                    b.Property<string>("Products")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -143,13 +162,17 @@ namespace Creators_Corner_App_API.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<byte[]>("Image")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Orders")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -166,6 +189,9 @@ namespace Creators_Corner_App_API.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("Username")
                         .IsUnique();
@@ -186,6 +212,10 @@ namespace Creators_Corner_App_API.Migrations
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Products")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
@@ -208,15 +238,23 @@ namespace Creators_Corner_App_API.Migrations
                     b.Property<int>("BrandId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Carts")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<byte[]>("Image")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Orders")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -235,15 +273,15 @@ namespace Creators_Corner_App_API.Migrations
 
             modelBuilder.Entity("OrderProduct", b =>
                 {
-                    b.Property<int>("OrdersId")
+                    b.Property<int>("_OrdersId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductsId")
+                    b.Property<int>("_ProductsId")
                         .HasColumnType("int");
 
-                    b.HasKey("OrdersId", "ProductsId");
+                    b.HasKey("_OrdersId", "_ProductsId");
 
-                    b.HasIndex("ProductsId");
+                    b.HasIndex("_ProductsId");
 
                     b.ToTable("OrderProducts", (string)null);
                 });
@@ -252,13 +290,13 @@ namespace Creators_Corner_App_API.Migrations
                 {
                     b.HasOne("Creators_Corner_App_API.Models.Cart", null)
                         .WithMany()
-                        .HasForeignKey("CartsId")
+                        .HasForeignKey("_CartsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Creators_Corner_App_API.Models.Product", null)
                         .WithMany()
-                        .HasForeignKey("ProductsId")
+                        .HasForeignKey("_ProductsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -281,7 +319,7 @@ namespace Creators_Corner_App_API.Migrations
             modelBuilder.Entity("Creators_Corner_App_API.Models.Order", b =>
                 {
                     b.HasOne("Creators_Corner_App_API.Models.Customer", "Customer")
-                        .WithMany("Orders")
+                        .WithMany("_Orders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -292,7 +330,7 @@ namespace Creators_Corner_App_API.Migrations
             modelBuilder.Entity("Creators_Corner_App_API.Models.Product", b =>
                 {
                     b.HasOne("Creators_Corner_App_API.Models.Brand", "Brand")
-                        .WithMany("Products")
+                        .WithMany("_Products")
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -304,20 +342,20 @@ namespace Creators_Corner_App_API.Migrations
                 {
                     b.HasOne("Creators_Corner_App_API.Models.Order", null)
                         .WithMany()
-                        .HasForeignKey("OrdersId")
+                        .HasForeignKey("_OrdersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Creators_Corner_App_API.Models.Product", null)
                         .WithMany()
-                        .HasForeignKey("ProductsId")
+                        .HasForeignKey("_ProductsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("Creators_Corner_App_API.Models.Brand", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("_Products");
                 });
 
             modelBuilder.Entity("Creators_Corner_App_API.Models.Customer", b =>
@@ -325,7 +363,7 @@ namespace Creators_Corner_App_API.Migrations
                     b.Navigation("Cart")
                         .IsRequired();
 
-                    b.Navigation("Orders");
+                    b.Navigation("_Orders");
                 });
 #pragma warning restore 612, 618
         }

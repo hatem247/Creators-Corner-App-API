@@ -2,16 +2,12 @@
 {
     public class Order
     {
-        public int Id { get; set; } // Primary key
-
-        public DateTime OrderDate { get; set; } // Date of the order
-        public decimal TotalAmount { get; set; } // Total amount of the order
-
-        // Foreign key to Customer (many-to-one relationship)
+        public int Id { get; set; }
+        public DateTime OrderDate { get; set; } = DateTime.Now;
+        public decimal TotalAmount { get; set; }
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
-
-        // Navigation property for Products (many-to-many relationship)
-        public List<Product> Products { get; set; } = new List<Product>();
+        public List<int> Products { get; set; } = new List<int>();
+        public List<Product> _Products { get; set; } = new List<Product>();
     }
 }

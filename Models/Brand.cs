@@ -3,11 +3,14 @@
     public class Brand
     {
         public int Id { get; set; }
-        public string Username { get; set; } // Unique username
+        public string Username { get; set; }
         public string Name { get; set; }
-        public string ImageUrl { get; set; }
+        public string Bio { get; set; }
+        public byte[] Image { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public List<Product> Products { get; set; } = new List<Product>();
+        public bool FirstLogin { get; set; } = true;
+        public List<int> Products { get; set; } = new List<int>();
+        public List<Product> _Products { get; set; } = new List<Product>();
     }
 }

@@ -20,11 +20,11 @@ namespace Creators_Corner_App_API.Controllers
 
         // Brand Login
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] BrandLoginDTO loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
             try
             {
-                var brand = await _brandRepository.LoginAsync(loginDto.username, loginDto.password);
+                var brand = await _brandRepository.LoginAsync(loginDto);
                 return Ok(Response<Brand>.Success("Login successful", brand));
             }
             catch (Exception ex)
@@ -40,7 +40,7 @@ namespace Creators_Corner_App_API.Controllers
             try
             {
                 await _brandRepository.FillApplicationAsync(applicationDto);
-                return Ok(Response<object>.Success("Application submitted successfully", null));
+                return Ok(Response<object>.Success("Application submitted successfully", applicationDto));
             }
             catch (Exception ex)
             {
@@ -55,7 +55,7 @@ namespace Creators_Corner_App_API.Controllers
             try
             {
                 await _brandRepository.UploadProductAsync(productDto);
-                return Ok(Response<object>.Success("Product uploaded successfully", null));
+                return Ok(Response<object>.Success("Product uploaded successfully", productDto));
             }
             catch (Exception ex)
             {
@@ -65,12 +65,12 @@ namespace Creators_Corner_App_API.Controllers
 
         // Get Products by Brand
         [HttpGet("products")]
-        public async Task<IActionResult> GetProductsByBrand([FromQuery] string brandUsername)
+        public async Task<IActionResult> GetProductsByBrand([FromQuery] int brandId)
         {
             try
             {
-                var products = await _brandRepository.GetProductsByBrandAsync(brandUsername);
-                return Ok(Response<List<Product>>.Success("Products retrieved successfully", products));
+                var products = await _brandRepository.GetProductsByBrandAsync(brandId);
+                return Ok(Response<List<ProductDTO>>.Success("Products retrieved successfully", products));
             }
             catch (Exception ex)
             {
@@ -83,8 +83,8 @@ namespace Creators_Corner_App_API.Controllers
         {
             try
             {
-                await _brandRepository.ForgetPasswordAsync(forgetPasswordDto.email);
-                return Ok(Response<object>.Success("Temporary password sent to your email", null));
+                await _brandRepository.ForgetPasswordAsync(forgetPasswordDto);
+                return Ok(Response<object>.Success("Temporary password sent to your email", forgetPasswordDto));
             }
             catch (Exception ex)
             {

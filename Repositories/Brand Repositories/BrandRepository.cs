@@ -14,10 +14,10 @@ namespace Creators_Corner_App_API.Repositories.Brand_Repositories
             _context = context;
         }
 
-        public async Task<Brand> LoginAsync(string username, string password)
+        public async Task<Brand> LoginAsync(LoginDTO loginDTO)
         {
             var brand = await _context.Brands
-                .FirstOrDefaultAsync(b => b.Username == username && b.Password == password);
+                .FirstOrDefaultAsync(b => b.Username == loginDTO.username && b.Password == loginDTO.password);
 
             if (brand == null)
                 throw new Exception("Invalid username or password");
@@ -32,8 +32,6 @@ namespace Creators_Corner_App_API.Repositories.Brand_Repositories
                 BrandName = applicationDto.brandName,
                 Email = applicationDto.email,
                 InstagramAccount = applicationDto.instagramAccount,
-                ApplicationDate = DateTime.UtcNow,
-                IsApproved = false
             };
 
             await _context.BrandApplications.AddAsync(application);
@@ -43,15 +41,16 @@ namespace Creators_Corner_App_API.Repositories.Brand_Repositories
         public async Task UploadProductAsync(ProductDTO productDto)
         {
             var brand = await _context.Brands
-                .FirstOrDefaultAsync(b => b.Username == productDto.brandUsername);
+                .FirstOrDefaultAsync(b => b.Id == productDto.brandId);
 
             if (brand == null)
                 throw new Exception("Brand not found");
-
+            byte[] imageBytes = Convert.FromBase64String(productDto.image);
             var product = new Product
             {
                 Name = productDto.name,
                 Description = productDto.description,
+                Image = imageBytes,
                 Price = productDto.price,
                 StockQuantity = productDto.stockQuantity,
                 BrandId = brand.Id
@@ -61,29 +60,36 @@ namespace Creators_Corner_App_API.Repositories.Brand_Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Product>> GetProductsByBrandAsync(string brandUsername)
+        public async Task<List<ProductDTO>> GetProductsByBrandAsync(int brandId)
         {
             var brand = await _context.Brands
-                .FirstOrDefaultAsync(b => b.Username == brandUsername);
+                .FirstOrDefaultAsync(b => b.Id == brandId);
 
             if (brand == null)
                 throw new Exception("Brand not found");
 
             return await _context.Products
-                .Where(p => p.BrandId == brand.Id)
+                .Where(p => p.BrandId == brand.Id).Select(x => new ProductDTO
+                {
+                    name = x.Name,
+                    description = x.Description,
+                    image = Convert.ToBase64String(x.Image),
+                    price = x.Price,
+                    stockQuantity = x.StockQuantity,
+                    brandId = x.BrandId
+                })
                 .ToListAsync();
         }
 
-        public async Task ForgetPasswordAsync(string email)
+        public async Task ForgetPasswordAsync(ForgetPasswordDTO forgetPasswordDTO)
         {
             var brand = await _context.Brands
-                .FirstOrDefaultAsync(c => c.Email == email);
+                .FirstOrDefaultAsync(c => c.Email == forgetPasswordDTO.email);
 
             if (brand == null)
                 throw new Exception("Customer not found");
 
-            var temporaryPassword = Guid.NewGuid().ToString().Substring(0, 8);
-            brand.Password = temporaryPassword;
+            brand.Password = forgetPasswordDTO.newPassword;
             await _context.SaveChangesAsync();
         }
     }

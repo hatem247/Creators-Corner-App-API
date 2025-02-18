@@ -19,11 +19,11 @@ namespace Creators_Corner_App_API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] CustomerLoginDTO loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
             try
             {
-                var customer = await _customerRepository.LoginAsync(loginDto.username, loginDto.password);
+                var customer = await _customerRepository.LoginAsync(loginDto);
                 return Ok(Response<Customer>.Success("Login successful", customer));
             }
             catch (Exception ex)
@@ -47,11 +47,11 @@ namespace Creators_Corner_App_API.Controllers
         }
 
         [HttpPost("buy-product")]
-        public async Task<IActionResult> BuyProduct([FromQuery] int productId, [FromQuery] string customerUsername)
+        public async Task<IActionResult> BuyProduct([FromQuery] int productId, [FromQuery] int customerId)
         {
             try
             {
-                await _customerRepository.BuyProductAsync(productId, customerUsername);
+                await _customerRepository.AddProductToCartAsync(productId, customerId);
                 return Ok(Response<object>.Success("Product purchased successfully", null));
             }
             catch (Exception ex)
@@ -93,7 +93,7 @@ namespace Creators_Corner_App_API.Controllers
         {
             try
             {
-                await _customerRepository.ForgetPasswordAsync(forgetPasswordDto.email);
+                await _customerRepository.ForgetPasswordAsync(forgetPasswordDto);
                 return Ok(Response<object>.Success("Temporary password sent to your email", null));
             }
             catch (Exception ex)
@@ -103,11 +103,11 @@ namespace Creators_Corner_App_API.Controllers
         }
 
         [HttpGet("cart")]
-        public async Task<IActionResult> GetCustomerCart([FromQuery] string customerUsername)
+        public async Task<IActionResult> GetCustomerCart([FromQuery] int customerId)
         {
             try
             {
-                var cart = await _customerRepository.GetCustomerCartAsync(customerUsername);
+                var cart = await _customerRepository.GetCustomerCartAsync(customerId);
                 return Ok(Response<Cart>.Success("Cart retrieved successfully", cart));
             }
             catch (Exception ex)
@@ -117,12 +117,12 @@ namespace Creators_Corner_App_API.Controllers
         }
 
         [HttpPost("add-to-cart")]
-        public async Task<IActionResult> AddProductToCart([FromQuery] int productId, [FromQuery] string customerUsername)
+        public async Task<IActionResult> AddProductToCart([FromQuery] int productId, [FromQuery] int customerId)
         {
             try
             {
-                await _customerRepository.AddProductToCartAsync(productId, customerUsername);
-                return Ok(Response<object>.Success("Product added to cart successfully", null));
+                await _customerRepository.AddProductToCartAsync(productId, customerId);
+                return Ok(Response<object>.Success("Product added to cart successfully", productId));
             }
             catch (Exception ex)
             {
