@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Creators_Corner_App_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250218210829_Initial_Migration")]
-    partial class Initial_Migration
+    [Migration("20250222082109_Initial Migration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -249,9 +249,9 @@ namespace Creators_Corner_App_API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("Image")
+                    b.Property<string>("Images")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()

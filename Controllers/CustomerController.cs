@@ -38,7 +38,7 @@ namespace Creators_Corner_App_API.Controllers
             try
             {
                 await _customerRepository.RegisterAsync(customerDto);
-                return Ok(Response<object>.Success("Customer registered successfully", null));
+                return Ok(Response<object>.Success("Customer registered successfully", customerDto));
             }
             catch (Exception ex)
             {
@@ -46,13 +46,13 @@ namespace Creators_Corner_App_API.Controllers
             }
         }
 
-        [HttpPost("buy-product")]
-        public async Task<IActionResult> BuyProduct([FromQuery] int productId, [FromQuery] int customerId)
+        [HttpPost("checkout")]
+        public async Task<IActionResult> Checkout([FromQuery] int customerId)
         {
             try
             {
-                await _customerRepository.AddProductToCartAsync(productId, customerId);
-                return Ok(Response<object>.Success("Product purchased successfully", null));
+                await _customerRepository.CheckoutAsync(customerId);
+                return Ok(Response<object>.Success("Checkout successfully", customerId));
             }
             catch (Exception ex)
             {
@@ -94,7 +94,7 @@ namespace Creators_Corner_App_API.Controllers
             try
             {
                 await _customerRepository.ForgetPasswordAsync(forgetPasswordDto);
-                return Ok(Response<object>.Success("Temporary password sent to your email", null));
+                return Ok(Response<object>.Success("Password updated succesfully", forgetPasswordDto));
             }
             catch (Exception ex)
             {

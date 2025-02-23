@@ -18,7 +18,6 @@ namespace Creators_Corner_App_API.Controllers
             _brandRepository = brandRepository;
         }
 
-        // Brand Login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
@@ -33,14 +32,13 @@ namespace Creators_Corner_App_API.Controllers
             }
         }
 
-        // Fill Brand Application
         [HttpPost("apply")]
         public async Task<IActionResult> FillApplication([FromBody] BrandApplicationDTO applicationDto)
         {
             try
             {
-                await _brandRepository.FillApplicationAsync(applicationDto);
-                return Ok(Response<object>.Success("Application submitted successfully", applicationDto));
+                int applicationNumber = await _brandRepository.FillApplicationAsync(applicationDto);
+                return Ok(Response<object>.Success("Application submitted successfully", applicationNumber));
             }
             catch (Exception ex)
             {
@@ -48,7 +46,6 @@ namespace Creators_Corner_App_API.Controllers
             }
         }
 
-        // Upload Product
         [HttpPost("upload-product")]
         public async Task<IActionResult> UploadProduct([FromBody] ProductDTO productDto)
         {
@@ -63,14 +60,26 @@ namespace Creators_Corner_App_API.Controllers
             }
         }
 
-        // Get Products by Brand
         [HttpGet("products")]
         public async Task<IActionResult> GetProductsByBrand([FromQuery] int brandId)
         {
             try
             {
                 var products = await _brandRepository.GetProductsByBrandAsync(brandId);
-                return Ok(Response<List<ProductDTO>>.Success("Products retrieved successfully", products));
+                return Ok(Response<List<Product>>.Success("Products retrieved successfully", products));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Response<object>.Fail(ex.Message));
+            }
+        }
+        [HttpGet("orders")]
+        public async Task<IActionResult> GetOrdersByBrand([FromQuery] int brandId)
+        {
+            try
+            {
+                var products = await _brandRepository.GetOrdersByBrandAsync(brandId);
+                return Ok(Response<List<Product>>.Success("Orders retrieved successfully", products));
             }
             catch (Exception ex)
             {
@@ -85,6 +94,61 @@ namespace Creators_Corner_App_API.Controllers
             {
                 await _brandRepository.ForgetPasswordAsync(forgetPasswordDto);
                 return Ok(Response<object>.Success("Temporary password sent to your email", forgetPasswordDto));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Response<object>.Fail(ex.Message));
+            }
+        }
+
+        [HttpPost("update-data")]
+        public async Task<IActionResult> UpdateData([FromBody] BrandDTO brandDTO, [FromQuery] int brandId)
+        {
+            try
+            {
+                await _brandRepository.UpdateData(brandDTO, brandId);
+                return Ok(Response<object>.Success("Data Updated successfully", brandDTO));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Response<object>.Fail(ex.Message));
+            }
+        }
+
+        [HttpPost("application-status")]
+        public async Task<IActionResult> GetApplicationStatus([FromQuery] string brandEmail)
+        {
+            try
+            {
+                var application = await _brandRepository.GetApplicationStatus(brandEmail);
+                return Ok(Response<object>.Success("Application retrieved successfully", application));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Response<object>.Fail(ex.Message));
+            }
+        }
+        [HttpPost("update-application-status")]
+        public async Task<IActionResult> UpdateApplicationStatus([FromQuery] int applicationId, [FromBody] bool status)
+        {
+            try
+            {
+                await _brandRepository.UpdateApplicationStatus(applicationId, status);
+                return Ok(Response<object>.Success("Application retrieved successfully", applicationId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Response<object>.Fail(ex.Message));
+            }
+        }
+
+        [HttpPost("update-login-status")]
+        public async Task<IActionResult> UpdateLoginStatus([FromQuery] int brandId)
+        {
+            try
+            {
+                await _brandRepository.UpdateLoginStatus(brandId);
+                return Ok(Response<object>.Success("Login successful", brandId));
             }
             catch (Exception ex)
             {

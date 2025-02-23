@@ -12,7 +12,7 @@ namespace Creators_Corner_App_API.DTOs
         public string description { get; set; }
 
         [Required(ErrorMessage = "No image uploaded")]
-        public string image { get; set; }
+        public List<string> images { get; set; }
         
         [Required(ErrorMessage = "Price is required")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]

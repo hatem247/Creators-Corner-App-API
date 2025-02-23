@@ -9,6 +9,10 @@ namespace Creators_Corner_App_API.Data
 
     public class AppDbContext : DbContext
     {
+        public AppDbContext()
+        {
+        }
+
         public AppDbContext(DbContextOptions options) : base(options)
         {
         }

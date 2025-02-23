@@ -54,10 +54,19 @@ namespace Creators_Corner_App_API.Repositories.Customer_Repositories
                 Password = customerDto.password,
                 Address = customerDto.address,
                 PhoneNumber = customerDto.phoneNumber,
-                Image = imageBytes
+                Image = imageBytes,
             };
 
             await _context.Customers.AddAsync(customer);
+            await _context.SaveChangesAsync();
+
+            customer.Cart = new Cart
+            {
+                CustomerId = customer.Id,
+                Products = []
+            };
+
+            _context.Customers.Update(customer);
             await _context.SaveChangesAsync();
         }
 
@@ -95,6 +104,14 @@ namespace Creators_Corner_App_API.Repositories.Customer_Repositories
                 Products = cart.Products,
             };
 
+            for(int i = 0; i < cart.Products.Count; i++)
+            {
+                var product = _context.Products.FirstOrDefault(x => x.Id == cart.Products[i]);
+                product.Orders.Add(order.Id);
+                _context.Products.Update(product);
+                await _context.SaveChangesAsync();
+            }
+            
             cart.Products.Clear();
             _context.Carts.Update(cart);
             await _context.Orders.AddAsync(order);
@@ -142,7 +159,7 @@ namespace Creators_Corner_App_API.Repositories.Customer_Repositories
         {
             var customer = await _context.Customers
                 .Include(c => c.Cart)
-                .ThenInclude(cart => cart.Products)
+                .ThenInclude(cart => cart._Products)
                 .FirstOrDefaultAsync(c => c.Id == customerId);
 
             if (customer == null)
@@ -168,7 +185,7 @@ namespace Creators_Corner_App_API.Repositories.Customer_Repositories
 
             if (customer.Cart == null)
             {
-                customer.Cart = new Cart { CustomerId = customer.Id };
+                customer.Cart = new Cart { CustomerId = customer.Id, Products = [] };
                 await _context.Carts.AddAsync(customer.Cart);
             }
 

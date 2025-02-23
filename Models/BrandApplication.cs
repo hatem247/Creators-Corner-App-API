@@ -7,6 +7,6 @@
         public string Email { get; set; }
         public string InstagramAccount { get; set; }
         public DateTime ApplicationDate { get; set; } = DateTime.UtcNow;
-        public string Status { get; set; } = "Pending";
+        public string Status { get; set; } = "pending";
     }
 }

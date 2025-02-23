@@ -1,4 +1,6 @@
-﻿namespace Creators_Corner_App_API.Models
+﻿using System.Text.Json.Serialization;
+
+namespace Creators_Corner_App_API.Models
 {
     public class Brand
     {
@@ -11,6 +13,7 @@
         public string Password { get; set; }
         public bool FirstLogin { get; set; } = true;
         public List<int> Products { get; set; } = new List<int>();
+        [JsonIgnore]
         public List<Product> _Products { get; set; } = new List<Product>();
     }
 }

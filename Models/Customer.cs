@@ -1,4 +1,6 @@
-﻿namespace Creators_Corner_App_API.Models
+﻿using System.Text.Json.Serialization;
+
+namespace Creators_Corner_App_API.Models
 {
     public class Customer
     {
@@ -10,8 +12,10 @@
         public string Password { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
+        [JsonIgnore]
         public Cart Cart { get; set; } = new Cart();
         public List<int> Orders { get; set; } = new List<int>();
+        [JsonIgnore]
         public List<Order> _Orders { get; set; } = new List<Order>();
     }
 }

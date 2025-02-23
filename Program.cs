@@ -26,6 +26,13 @@ namespace Creators_Corner_App_API
 
             var app = builder.Build();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<AppDbContext>();
+                DataSeeder.Seed(context);
+            }
+
             // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
